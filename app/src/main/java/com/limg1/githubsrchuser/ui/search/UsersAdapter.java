@@ -2,11 +2,9 @@ package com.limg1.githubsrchuser.ui.search;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.limg1.githubsrchuser.R;
@@ -46,7 +44,22 @@ class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
     public void onBindViewHolder(UserViewHolder holder, int position) {
         GitUser item = items.get(position);
 
-        holder.textViewBio.setText(item.getBio());
+        if (item.getLike() != null && item.getLike()) {
+            holder.imageViewLike.setVisibility(View.VISIBLE);
+            holder.constraintLayout.setVisibility(View.VISIBLE);
+            holder.hideRow.setVisibility(View.GONE);
+        }
+        else if (isLike) {
+            holder.constraintLayout.setVisibility(View.GONE);
+            holder.hideRow.setVisibility(View.VISIBLE);
+//            holder.Layout_hide();
+        }
+        else {
+            holder.imageViewLike.setVisibility(View.GONE);
+            holder.constraintLayout.setVisibility(View.VISIBLE);
+            holder.hideRow.setVisibility(View.GONE);
+        }
+        //holder.textViewBio.setText(item.getUrl());
         if (item.getName() != null) {
             holder.textViewName.setText(item.getLogin() + " - " + item.getName());
         } else {
@@ -62,13 +75,6 @@ class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
                 }
             }
         });
-        if (item.getLike() != null && item.getLike()) {
-            holder.imageViewLike.setVisibility(View.VISIBLE);
-        } else if (isLike) {
-            holder.Layout_hide();
-        } else {
-            holder.imageViewLike.setVisibility(View.GONE);
-        }
 
 
     }
@@ -83,10 +89,6 @@ class UsersAdapter extends RecyclerView.Adapter<UserViewHolder> {
 
     void setItems(List<GitUser> githubUserList) {
         this.items = githubUserList;
-        notifyDataSetChanged();
-    }
-    void addItems(List<GitUser> githubUserList) {
-        this.items.addAll(githubUserList);
         notifyDataSetChanged();
     }
 }

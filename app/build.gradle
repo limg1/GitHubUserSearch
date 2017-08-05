@@ -33,7 +33,13 @@ android {
         enabled =true
     }
     */
+
+    dexOptions{
+        javaMaxHeapSize "8g"
+    }
+
     compileOptions {
+        incremental true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }

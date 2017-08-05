@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,8 @@ import com.limg1.githubsrchuser.data.remote.model.GitUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -39,8 +42,8 @@ public class UserSearchActivity extends AppCompatActivity implements UserSearchC
     List<GitUser> githubUserLists;
     String querySrchText;
 
-    int cntPage =1;
-    boolean isMoreData =false;
+    int cntPage = 1;
+    boolean isMoreData = false;
 
 
     @Override
@@ -71,37 +74,68 @@ public class UserSearchActivity extends AppCompatActivity implements UserSearchC
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UserSearchActivity.this, UserLikeActivity.class);
-                intent.putExtra(CommonText.INTENTDATA_RESULTUSERS, (ArrayList<GitUser>)githubUserLists);
+                intent.putExtra(CommonText.INTENTDATA_RESULTUSERS, (ArrayList<GitUser>) githubUserLists);
                 startActivityForResult(intent, CommonText.LIKE_REQUEST_CODE);
             }
         });
-        recyclerViewUsers.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        /*
+        recyclerViewUsers.addOnScrollListener(new EndlessRecyclerOnScrollListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE){
-                    fab.show();
-                }
-                if(!recyclerView.canScrollVertically(1) && isMoreData){
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                //super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 || dy < 0 && fab.isShown())
+                    fab.hide();
+            }
+
+            @Override
+            public void onLoadMore(int currentPage) {
+                Log.e("onLoadMore",currentPage+"");
+                if (isMoreData) {
                     cntPage++;
                     userSearchPresenter.search(querySrchText, cntPage);
                 }
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    fab.show();
+                }
+            }
+        });
+        */
+
+
+        recyclerViewUsers.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    fab.show();
+                }
+                if (!recyclerView.canScrollVertically(1) && isMoreData) {
+                    cntPage++;
+                    userSearchPresenter.search(querySrchText, cntPage);
+                }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 //super.onScrolled(recyclerView, dx, dy);
-                if (dy > 0 ||dy<0 && fab.isShown())
+                if (dy > 0 || dy < 0 && fab.isShown())
                     fab.hide();
             }
         });
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == CommonText.LIKE_REQUEST_CODE && data!=null) {
+        if (resultCode == CommonText.LIKE_REQUEST_CODE && data != null) {
             githubUserLists = (ArrayList<GitUser>) data.getSerializableExtra(CommonText.INTENTDATA_RESULTUSERS);
             usersAdapter.setItems(githubUserLists);
         }
@@ -148,17 +182,18 @@ public class UserSearchActivity extends AppCompatActivity implements UserSearchC
     public void showSearchResults(List<GitUser> githubUserList) {
         recyclerViewUsers.setVisibility(View.VISIBLE);
         textViewErrorMessage.setVisibility(View.GONE);
-        if(githubUserList!=null && githubUserList.size()>0){
-            isMoreData =true;
-        }else{
-            isMoreData =false;
+        if (githubUserList != null && githubUserList.size() > 0) {
+            isMoreData = true;
+            if (cntPage == 1) {
+                githubUserLists = githubUserList;
+                usersAdapter.setItems(githubUserLists);
+            } else if (cntPage > 1) {
+                githubUserLists.addAll(githubUserList);
+            }
+        } else {
+            isMoreData = false;
         }
-        githubUserLists = githubUserList;
-        if(cntPage==1){
-            usersAdapter.setItems(githubUserLists);
-        }else if(cntPage >1){
-            usersAdapter.addItems(githubUserLists);
-        }
+
     }
 
     @Override

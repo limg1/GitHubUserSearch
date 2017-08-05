@@ -2,28 +2,18 @@ package com.limg1.githubsrchuser.ui.search;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.limg1.githubsrchuser.R;
 import com.limg1.githubsrchuser.data.CommonText;
-import com.limg1.githubsrchuser.data.remote.Injection;
 import com.limg1.githubsrchuser.data.remote.model.GitUser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 public class UserLikeActivity extends AppCompatActivity {
@@ -40,7 +30,6 @@ public class UserLikeActivity extends AppCompatActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         recyclerViewUsers = (RecyclerView) findViewById(R.id.recycler_view_users);
-
 
         if(getIntent()!=null){
             githubUserLists = (ArrayList<GitUser>)getIntent().getSerializableExtra(CommonText.INTENTDATA_RESULTUSERS);

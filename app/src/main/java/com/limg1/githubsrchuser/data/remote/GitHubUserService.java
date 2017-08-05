@@ -1,10 +1,8 @@
 package com.limg1.githubsrchuser.data.remote;
 
-import com.limg1.githubsrchuser.data.remote.model.GitUser;
 import com.limg1.githubsrchuser.data.remote.model.GitUsersList;
 
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
